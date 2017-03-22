@@ -3,18 +3,18 @@ import sbt.Keys.publish
 lazy val commonSettings = Def.settings(
   scalaVersion := "2.11.8",
   organization := "com.github.nadavwr",
-  version := "0.1"
+  version := "0.1.0"
 )
 
-lazy val mempool = crossProject(NativePlatform)
+lazy val mempool = project
+  .enablePlugins(ScalaNativePlugin)
   .settings(commonSettings)
-  .nativeSettings(
+  .settings(
     nativeSharedLibrary := true
   )
 
-lazy val mempoolNative = mempool.native
-
-lazy val sample = crossProject(NativePlatform)
+lazy val sample = project
+  .enablePlugins(ScalaNativePlugin)
   .dependsOn(mempool)
   .settings(
     commonSettings,
@@ -22,13 +22,11 @@ lazy val sample = crossProject(NativePlatform)
     publishLocal := {}
   )
 
-lazy val sampleNative = sample.native
-
 lazy val mempoolRoot = (project in file("."))
-  .aggregate(mempoolNative, sampleNative)
+  .aggregate(mempool, sample)
   .settings(
     commonSettings,
-    run := { (run in sampleNative).evaluated },
+    run := { (run in sample).evaluated },
     publish := {},
     publishLocal := {}
   )
