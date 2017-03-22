@@ -18,5 +18,6 @@ object Sized {
   def sizeof[A : Sized]: CSize = implicitly[Sized[A]].size
 
   implicit lazy val byteSized: Sized[Byte] = Sized.instance[Byte](native.sizeof[Byte])
-  implicit lazy val PtrSized: Sized[Ptr[_]] = Sized.instance[Ptr[_]](native.sizeof[Ptr[_]])
+  implicit lazy val cDoubleSized: Sized[CDouble] = Sized.instance[CDouble](native.sizeof[CDouble])
+  implicit lazy val ptrSized: Sized[Ptr[_]] = Sized.instance[Ptr[_]](native.sizeof[Ptr[_]])
 }

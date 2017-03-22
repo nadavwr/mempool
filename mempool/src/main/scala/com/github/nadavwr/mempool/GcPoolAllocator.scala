@@ -1,12 +1,17 @@
 package com.github.nadavwr.mempool
 
+import scala.scalanative.runtime.GC
 import scalanative.native._
 
-@link("gc")
-@extern
 private[mempool] object GcPoolAllocator extends PoolAllocator {
-  @name("GC_malloc_atomic")
-  override def malloc(size: CSize): Ptr[Byte] = extern
-  @name("GC_free")
-  override def free(ptr: Ptr[Byte]): Unit = extern
+  @link("gc")
+  @extern
+  private object impl {
+    @name("GC_free")
+    def free(ptr: Ptr[Byte]): Unit = extern
+  }
+
+  override def malloc(size: CSize): Ptr[CSignedChar] = GC.malloc(size)
+
+  override def free(ptr: Ptr[CSignedChar]): Unit = impl.free(ptr)
 }
